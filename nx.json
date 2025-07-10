@@ -14,7 +14,6 @@
     ],
     "sharedGlobals": ["{workspaceRoot}/.gitlab-ci.yml"]
   },
-  "nxCloudId": "686e34ca26a0351b0e45529c",
   "plugins": [
     {
       "plugin": "@nx/js/typescript",
@@ -51,12 +50,34 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["apps/nest-mono-e2e/**/*"]
+      "exclude": ["apps/nest-mono-e2e/**/*", "apps/service-user-e2e/**/*"]
     }
   ],
   "targetDefaults": {
     "test": {
       "dependsOn": ["^build"]
     }
+  },
+  "cli": {
+    "defaultBase": "main"
+  },
+  "release": {
+    "projects": ["@nest-mono/service-*", "!@nest-mono/*-e2e"],
+    "version": {
+      "conventionalCommits": true
+    },
+    "projectsRelationship": "independent",
+    "changelog": {
+      "workspaceChangelog": false,
+      "projectChangelogs": {
+        "createRelease": false
+      }
+    },
+    "git": {
+      "commitMessageFormat": "chore(release): publish [skip ci]",
+      "commit": true,
+      "tag": true
+    },
+    "releaseTagPattern": "{projectName}@v{version}"
   }
 }

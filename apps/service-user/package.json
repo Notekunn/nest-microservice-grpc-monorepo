@@ -1,5 +1,5 @@
 {
-  "name": "@nest-microservice-grpc-monorepo/nest-mono",
+  "name": "@nest-mono/service-user",
   "version": "0.0.1",
   "private": true,
   "nx": {
@@ -28,15 +28,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "@nest-microservice-grpc-monorepo/nest-mono:build",
+          "buildTarget": "@nest-mono/service-user:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "@nest-microservice-grpc-monorepo/nest-mono:build:development"
+            "buildTarget": "@nest-mono/service-user:build:development"
           },
           "production": {
-            "buildTarget": "@nest-microservice-grpc-monorepo/nest-mono:build:production"
+            "buildTarget": "@nest-mono/service-user:build:production"
           }
         }
       },

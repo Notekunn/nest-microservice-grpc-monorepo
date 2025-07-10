@@ -1,27 +1,73 @@
-image: node:20
+image: node:22-slim
+
+stages:
+  - setup
+  - test
+  - release
+  - build
+
 variables:
-  CI: 'true'
+  GITLAB_TOKEN: ${GITLAB_TOKEN}
 
-# Main job
-CI:
-  interruptible: true
-  only:
-    - main
-    - merge_requests
+# Cache modules in between jobs
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .pnpm-store
+    - node_modules/
+
+# Single release job for all branches
+release:
+  stage: release
+  resource_group: release # Global lock for all releases
+  before_script:
+    - apt-get update && apt-get install -y git
+    - corepack enable
+    - git config user.name "${GITLAB_USER_NAME}"
+    - git config user.email "${GITLAB_USER_EMAIL}"
+    - echo "https://${GITLAB_USER_NAME}:${GL_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - git remote set-url origin "https://${GITLAB_USER_NAME}:${GL_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - git checkout $CI_COMMIT_SHA && git fetch --all --tags
+    - pnpm install --frozen-lockfile --ignore-scripts
+    - export NX_HEAD=$CI_COMMIT_SHA
+    - export NX_BASE=${CI_MERGE_REQUEST_DIFF_BASE_SHA:-$CI_COMMIT_BEFORE_SHA}
   script:
-    - npm install --prefix=$HOME/.local -g pnpm@8
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "main" ]]; then
+        PREID=""
+      elif [[ "$CI_COMMIT_BRANCH" == "staging" ]]; then
+        PREID="alpha"
+      elif [[ "$CI_COMMIT_BRANCH" == "beta" ]]; then
+        PREID="beta"
+      else
+        echo "Branch not configured for releases"
+        exit 1
+      fi
 
-    # This enables task distribution via Nx Cloud
-    # Run this command as early as possible, before dependencies are installed
-    # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-    # Uncomment this line to enable task distribution
-    # - pnpm dlx nx-cloud start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="build"
+      if [[ -n "$PREID" ]]; then
+        pnpm nx release --skip-publish --first-release --preid=$PREID
+      else
+        pnpm nx release --skip-publish --first-release
+      fi
+    - git push origin HEAD:${CI_COMMIT_BRANCH} -o ci.skip && git push --tags
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH =~ /(main|staging|beta)/
 
-    - pnpm install --frozen-lockfile
-    - NX_HEAD=$CI_COMMIT_SHA
-    - NX_BASE=${CI_MERGE_REQUEST_DIFF_BASE_SHA:-$CI_COMMIT_BEFORE_SHA}
-
-    # Prepend any command with "nx-cloud record --" to record its logs to Nx Cloud
-    # - pnpm exec nx-cloud record -- echo Hello World
-    # Nx Affected runs only tasks affected by the changes in this PR/commit. Learn more: https://nx.dev/ci/features/affected
-    - pnpm exec nx affected -t lint test build
+# Build docker image
+docker-build:
+  stage: build
+  image: docker:25
+  services:
+    - docker:25-dind
+  before_script:
+    - SERVICE_FULL_NAME=$(echo $CI_COMMIT_TAG | cut -d '@' -f 2)
+    - SERVICE_NAME=$(echo $SERVICE_FULL_NAME | cut -d '/' -f 2)
+    - SERVICE_TAG=$(echo $CI_COMMIT_TAG | cut -d '@' -f 3)
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY_IMAGE/$SERVICE_NAME:$SERVICE_TAG --build-arg SERVICE_NAME=$SERVICE_NAME --build-arg SERVICE_TAG=$SERVICE_TAG .
+    - docker push $CI_REGISTRY_IMAGE/$SERVICE_NAME:$SERVICE_TAG
+  rules:
+    - if: $CI_COMMIT_TAG =~ /(.*)@(.*)/
