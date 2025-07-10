@@ -68,9 +68,11 @@
     },
     "projectsRelationship": "independent",
     "changelog": {
-      "workspaceChangelog": false,
-      "projectChangelogs": {
+      "workspaceChangelog": {
         "createRelease": false
+      },
+      "projectChangelogs": {
+        "createRelease": "github"
       }
     },
     "git": {
@@ -78,6 +80,6 @@
       "commit": true,
       "tag": true
     },
-    "releaseTagPattern": "{projectName}@v{version}"
+    "releaseTagPattern": "{projectNameWithoutScope}@v{version}"
   }
 }
