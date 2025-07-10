@@ -79,7 +79,6 @@
       "commitMessageFormat": "chore(release): publish [skip ci]",
       "commit": true,
       "tag": true
-    },
-    "releaseTagPattern": "{projectName}@v{version}"
+    }
   }
 }
