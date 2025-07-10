@@ -80,6 +80,6 @@
       "commit": true,
       "tag": true
     },
-    "releaseTagPattern": "{projectNameWithoutScope}@v{version}"
+    "releaseTagPattern": "{projectName}@v{version}"
   }
 }
