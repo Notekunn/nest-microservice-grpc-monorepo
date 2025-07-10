@@ -12,6 +12,10 @@ concurrency:
   group: release
   cancel-in-progress: false
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
