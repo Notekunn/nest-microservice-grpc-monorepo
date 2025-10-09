@@ -1,0 +1,20 @@
+{
+  "name": "shared-grpc",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared-grpc/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/shared-grpc",
+        "tsConfig": "libs/shared-grpc/tsconfig.lib.json",
+        "packageJson": "libs/shared-grpc/package.json",
+        "main": "libs/shared-grpc/src/index.ts",
+        "assets": ["libs/shared-grpc/*.md", "libs/shared-grpc/src/**/*.proto"]
+      }
+    }
+  }
+}
