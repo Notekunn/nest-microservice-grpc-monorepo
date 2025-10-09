@@ -49,7 +49,7 @@
     }
   },
   "release": {
-    "projects": ["@nest-mono/service-*", "!@nest-mono/*-e2e"],
+    "projects": ["apps/*", "!apps/*-e2e"],
     "version": {
       "conventionalCommits": true
     },
