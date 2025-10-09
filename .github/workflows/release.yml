@@ -5,8 +5,8 @@ on:
     branches: [main, staging, beta]
 
 env:
-  NODE_VERSION: '23'
-  PNPM_VERSION: '10.11.0'
+  NODE_VERSION: "23"
+  PNPM_VERSION: "10.18.0"
 
 concurrency:
   group: release
