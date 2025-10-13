@@ -1,4 +1,5 @@
 export * from './user';
+export * from './user.nest';
 export * from './user/CreateUserRequest';
 export * from './user/CreateUserResponse';
 export * from './user/DeleteUserRequest';
@@ -14,4 +15,3 @@ export * from './user/UpdateUserResponse';
 export * from './user/User';
 export * from './user/UserService';
 export * from './user/UserStatus';
-export * from './user.nest';

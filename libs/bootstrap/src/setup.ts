@@ -1,14 +1,14 @@
-import { Logger, Type, VersioningType } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
 import fastifyHelmet from '@fastify/helmet';
+import { AppConfiguration } from '@nest-mono/configuration';
+import { Logger, Type, VersioningType } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { GrpcOptions, Transport } from '@nestjs/microservices';
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import * as morgan from 'morgan';
-import { AppConfiguration } from '@nest-mono/configuration';
-import { GrpcOptions, Transport } from '@nestjs/microservices';
 
 import { setupSwagger } from './swagger';
 

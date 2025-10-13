@@ -1,5 +1,6 @@
-import baseConfig from '../../eslint.config.mjs';
 import { globalIgnores } from 'eslint/config';
+
+import baseConfig from '../../eslint.config.mjs';
 
 export default [
   ...baseConfig,

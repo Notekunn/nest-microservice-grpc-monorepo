@@ -3,10 +3,11 @@
  * This is only a minimal backend to get started.
  */
 
+import { SharedGrpcModule } from '@nest-mono/shared-grpc';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+
 import { AppModule } from './app/app.module';
-import { SharedGrpcModule } from '@nest-mono/shared-grpc';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
