@@ -1,0 +1,17 @@
+{
+  "name": "@nest-mono/bootstrap",
+  "version": "0.0.1",
+  "private": true,
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "dependencies": {
+    "tslib": "^2.3.0",
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/swagger": "^11.2.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/platform-fastify": "^11.1.6",
+    "@nestjs/config": "^4.0.2",
+    "@fastify/helmet": "^13.0.2"
+  }
+}

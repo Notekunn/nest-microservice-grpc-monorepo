@@ -15,6 +15,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@nest-mono/bootstrap": ["libs/bootstrap/src/index.ts"],
+      "@nest-mono/bootstrap--buildable": [
+        "libs/bootstrap--buildable/src/index.ts"
+      ],
+      "@nest-mono/configuration": ["libs/configuration/src/index.ts"],
+      "@nest-mono/setup-swagger": ["libs/setup-swagger/src/index.ts"],
       "@nest-mono/shared-grpc": ["libs/shared-grpc/src/index.ts"]
     }
   },
