@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "proto:types": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --outDir=libs/shared-grpc/src/generated libs/shared-grpc/src/proto/*.proto"
+    "proto:types": "proto-loader-gen-types --longs=String --enums=String --defaults --oneofs --grpcLib=@grpc/grpc-js --includeComments --outDir=libs/shared-grpc/src/generated libs/shared-grpc/src/proto/*.proto && ts-node libs/shared-grpc/src/scripts/generate-exports.ts"
   },
   "private": true,
   "dependencies": {

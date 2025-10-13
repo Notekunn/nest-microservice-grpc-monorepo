@@ -1,6 +1,7 @@
 import fastifyHelmet from '@fastify/helmet';
 import { AppConfiguration } from '@nest-mono/configuration';
-import { Logger, Type, VersioningType } from '@nestjs/common';
+import { getProtoPath } from '@nest-mono/shared-grpc';
+import { Logger, Type, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { GrpcOptions, Transport } from '@nestjs/microservices';
@@ -12,8 +13,15 @@ import * as morgan from 'morgan';
 
 import { setupSwagger } from './swagger';
 
+export interface SetupGrpcOptions {
+  enabled: boolean;
+  protoFiles: string[];
+  package: string;
+  url: string;
+}
+
 export interface SetupOptions {
-  useGrpc?: boolean;
+  grpc?: SetupGrpcOptions;
   useKafka?: boolean;
   useTcp?: boolean;
   disableMorgan?: boolean;
@@ -36,27 +44,15 @@ export async function setup(
   if (!appConfig) {
     throw new Error('App configuration is not defined');
   }
-  const { host, httpPort, grpcPort, version } = appConfig;
-  if (options.disableMorgan) {
-    app.use(morgan('common'));
-  }
+  const { host, httpPort, grpcPort, tcpPort, version, corsOrigins } = appConfig;
 
-  app.enableVersioning({
-    defaultVersion: '1',
-    type: VersioningType.URI,
-  });
-
-  if (process.env['NODE_ENV'] !== 'production') {
-    setupSwagger(app, version);
-  }
-
-  if (options.useGrpc) {
+  if (options.grpc?.enabled) {
     logger.log('[Microservice] GRPC transport layer is enabled');
     app.connectMicroservice<GrpcOptions>({
       transport: Transport.GRPC,
       options: {
-        package: 'payment',
-        protoPath: '..',
+        package: options.grpc.package,
+        protoPath: getProtoPath(options.grpc.protoFiles),
         url: `0.0.0.0:${grpcPort}`,
         keepalive: {
           keepaliveTimeMs: 600000,
@@ -67,9 +63,31 @@ export async function setup(
     });
   }
 
+  if (options.disableMorgan) {
+    app.use(morgan('common'));
+  }
+
+  app.enableVersioning({
+    defaultVersion: '1',
+    type: VersioningType.URI,
+  });
+
+  // TODO: update global exception filter
+
+  if (process.env['NODE_ENV'] !== 'production') {
+    setupSwagger(app, version);
+  }
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    })
+  );
+
   app.enableCors({
-    // origin: corsOrigins.length > 0 ? corsOrigins : '*',
-    origin: '*',
+    origin: corsOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Accept, Authorization',
     credentials: true,
@@ -90,8 +108,12 @@ export async function setup(
       },
     },
   });
+
+  await app.startAllMicroservices();
   await app.listen(httpPort, host);
 
-  logger.log(`server running on ${host}:${httpPort}`);
+  logger.log(
+    `🚀 Application is running on: http://${host}:${httpPort}, tcp://${host}:${tcpPort}, grpc://${host}:${grpcPort}`
+  );
   return app;
 }

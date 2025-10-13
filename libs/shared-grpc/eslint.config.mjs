@@ -18,5 +18,5 @@ export default [
       parser: await import('jsonc-eslint-parser'),
     },
   },
-  globalIgnores(['**/generated/*.ts', '!**/generated/index.ts']),
+  globalIgnores(['**/generated/**/*.ts', '!**/generated/index.ts']),
 ];

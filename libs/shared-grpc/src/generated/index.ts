@@ -1,5 +1,8 @@
+// Re-export all types from generated proto files
 export * from './user';
 export * from './user.nest';
+
+// Re-export all individual type files from user module
 export * from './user/CreateUserRequest';
 export * from './user/CreateUserResponse';
 export * from './user/DeleteUserRequest';

@@ -14,6 +14,7 @@ export interface AppConfiguration {
   readonly grpcPort: number;
   readonly version: string;
   readonly session: string;
+  readonly corsOrigins: string[];
 }
 
 export class AppEnvironmentSchema {
@@ -34,6 +35,10 @@ export class AppEnvironmentSchema {
   @IsNumberString()
   @IsOptional()
   SERVICE_GRPC: string;
+
+  @IsString()
+  @IsOptional()
+  CORS_ORIGIN: string;
 }
 
 export const appConfiguration = registerAs<AppConfiguration>('app', () => {
@@ -44,6 +49,10 @@ export const appConfiguration = registerAs<AppConfiguration>('app', () => {
     process.env['npm_package_version'] ||
     '0.0.0';
   const session = `${appName}-${new Date().getTime()}`;
+  const corsOrigins = (process.env['CORS_ORIGIN'] || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
   return {
     name: appName,
     host: process.env['SERVICE_HOST'] || '0.0.0.0',
@@ -52,5 +61,6 @@ export const appConfiguration = registerAs<AppConfiguration>('app', () => {
     grpcPort: +(process.env['SERVICE_GRPC'] || 3200),
     version: appVersion,
     session,
+    corsOrigins: corsOrigins.length > 0 ? corsOrigins : ['*'],
   };
 });

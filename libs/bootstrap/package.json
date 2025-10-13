@@ -15,6 +15,7 @@
     "@fastify/helmet": "^13.0.2",
     "morgan": "^1.10.1",
     "@nest-mono/configuration": "0.0.1",
-    "@nestjs/microservices": "^11.1.6"
+    "@nestjs/microservices": "^11.1.6",
+    "@nest-mono/shared-grpc": "0.0.1"
   }
 }
