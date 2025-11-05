@@ -52,9 +52,9 @@
     "version": {
       "conventionalCommits": true
     },
-    "projectsRelationship": "fixed",
+    "projectsRelationship": "independent",
     "changelog": {
-      "workspaceChangelog": {
+      "projectChangelogs": {
         "createRelease": "github"
       }
     },
