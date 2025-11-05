@@ -1,3 +1,7 @@
+## 0.2.0-alpha.4 (2025-11-05)
+
+This was a version bump only for service-user to align it with other projects, there were no code changes.
+
 ## 0.2.0-alpha.3 (2025-11-05)
 
 ### 🩹 Fixes
