@@ -13,7 +13,7 @@ RUN pnpm install --frozen-lockfile --ignore-scripts --verbose
 
 COPY . .
 
-RUN pnpm nx build ${SERVICE_NAME}
+RUN pnpm proto:types && pnpm nx build ${SERVICE_NAME}
 
 FROM node:24-slim AS runner
 
