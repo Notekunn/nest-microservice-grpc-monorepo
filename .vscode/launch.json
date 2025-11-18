@@ -6,13 +6,19 @@
       "request": "launch",
       "name": "Debug nest-mono with Nx",
       "runtimeExecutable": "pnpm exec",
-      "runtimeArgs": ["nx", "serve", "nest-mono"],
+      "runtimeArgs": [
+        "nx",
+        "serve",
+        "nest-mono"
+      ],
       "env": {
         "NODE_OPTIONS": "--inspect=9229"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/apps/nest-mono/dist/**/*.(m|c|)js",
@@ -24,16 +30,46 @@
       "request": "launch",
       "name": "Debug service-user with Nx",
       "runtimeExecutable": "pnpm exec",
-      "runtimeArgs": ["nx", "serve", "service-user"],
+      "runtimeArgs": [
+        "nx",
+        "serve",
+        "service-user"
+      ],
       "env": {
         "NODE_OPTIONS": "--inspect=9230"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/apps/service-user/dist/**/*.(m|c|)js",
+        "!**/node_modules/**"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug service-auth with Nx",
+      "runtimeExecutable": "pnpm exec",
+      "runtimeArgs": [
+        "nx",
+        "serve",
+        "service-auth"
+      ],
+      "env": {
+        "NODE_OPTIONS": "--inspect=9231"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceFolder}/apps/service-auth/dist/**/*.(m|c|)js",
         "!**/node_modules/**"
       ]
     }
