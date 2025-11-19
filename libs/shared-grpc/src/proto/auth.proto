@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package auth;
+
+// Auth service definition
+service AuthService {
+  // Register a new user
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+
+  // Login with email and password
+  rpc Login(LoginRequest) returns (LoginResponse);
+
+  // Validate access token
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+
+  // Refresh access token
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+
+  // Logout user
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+
+  // Change user password
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+}
+
+// Auth user entity
+message AuthUser {
+  string id = 1;
+  string email = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string phone = 5;
+  int64 created_at = 6;
+  int64 updated_at = 7;
+}
+
+// Token pair
+message TokenPair {
+  string access_token = 1;
+  string refresh_token = 2;
+  int64 expires_in = 3;
+}
+
+// Register request/response
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string phone = 5;
+}
+
+message RegisterResponse {
+  AuthUser user = 1;
+  TokenPair tokens = 2;
+  string message = 3;
+}
+
+// Login request/response
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  AuthUser user = 1;
+  TokenPair tokens = 2;
+  string message = 3;
+}
+
+// Validate token request/response
+message ValidateTokenRequest {
+  string access_token = 1;
+}
+
+message ValidateTokenResponse {
+  bool is_valid = 1;
+  AuthUser user = 2;
+  string message = 3;
+}
+
+// Refresh token request/response
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+message RefreshTokenResponse {
+  TokenPair tokens = 1;
+  string message = 2;
+}
+
+// Logout request/response
+message LogoutRequest {
+  string access_token = 1;
+}
+
+message LogoutResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Change password request/response
+message ChangePasswordRequest {
+  string user_id = 1;
+  string old_password = 2;
+  string new_password = 3;
+}
+
+message ChangePasswordResponse {
+  bool success = 1;
+  string message = 2;
+}

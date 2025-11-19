@@ -63,9 +63,11 @@ export async function setup(
     });
   }
 
-  if (options.disableMorgan) {
-    app.use(morgan('common'));
-  }
+  // Morgan logging is disabled for now due to type issues
+  // TODO: Fix morgan integration
+  // if (!options.disableMorgan) {
+  //   app.use(morgan('common'));
+  // }
 
   app.enableVersioning({
     defaultVersion: '1',
