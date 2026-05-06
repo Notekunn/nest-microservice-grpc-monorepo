@@ -8,6 +8,18 @@
     },
     {
       "path": "./packages/libs/nest-core"
+    },
+    {
+      "path": "./packages/apps/service-a-e2e"
+    },
+    {
+      "path": "./packages/apps/service-a"
+    },
+    {
+      "path": "./packages/apps/service-b-e2e"
+    },
+    {
+      "path": "./packages/apps/service-b"
     }
   ]
 }
