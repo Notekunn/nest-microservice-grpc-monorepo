@@ -1,0 +1,17 @@
+**/node_modules
+**/dist
+**/out-tsc
+.nx
+**/.nx
+**/coverage
+**/.git
+.git
+**/.env
+**/.env.*
+**/src/generated
+**/.DS_Store
+**/*.log
+.vscode
+.idea
+plans
+docs

@@ -33,10 +33,12 @@ USER node
 CMD ["node", "main.js"]
 ```
 
-## Per-Service Files
-- `packages/apps/service-a/Dockerfile` (set ARG SERVICE=service-a)
-- `packages/apps/service-b/Dockerfile`
-- Or single `Dockerfile` at root + `--build-arg SERVICE=`. Recommend per-service for clarity.
+## Single Root Dockerfile
+- `Dockerfile` at workspace root, parameterised via `--build-arg SERVICE=<name>`.
+- Build:
+  - `docker build --build-arg SERVICE=service-a -t service-a:dev .`
+  - `docker build --build-arg SERVICE=service-b -t service-b:dev .`
+- Strategy: `nx run @nest-mono/<svc>:prune` produces self-contained dist (workspace_modules + pruned lockfile); runtime stage installs prod deps with `--config.node-linker=hoisted` so webpack-externalised `require(...)` calls resolve from flat `node_modules`.
 
 ## .dockerignore
 `node_modules`, `dist`, `.nx`, `**/coverage`, `**/.git`, `**/src/generated`.

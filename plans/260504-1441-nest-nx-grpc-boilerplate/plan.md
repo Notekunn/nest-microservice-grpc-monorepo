@@ -22,7 +22,7 @@ Nx monorepo, 2 Nest hybrid services (Fastify + gRPC), shared proto + nest-core l
 | 03 | nest-core shared lib | done |
 | 04 | Service-A + Service-B scaffolds | done |
 | 05 | Inter-service gRPC wiring + E2E | done |
-| 06 | Dockerfiles | pending |
+| 06 | Dockerfiles | done |
 | 07 | nx release config (independent + conventional) | pending |
 | 08 | GitLab CI + Harbor | pending |
 
