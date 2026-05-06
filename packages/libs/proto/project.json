@@ -1,0 +1,55 @@
+{
+  "name": "@nest-mono/proto",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/libs/proto/src",
+  "projectType": "library",
+  "targets": {
+    "generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/libs/proto",
+        "command": "buf generate"
+      },
+      "outputs": ["{projectRoot}/src/generated"],
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/src/proto/**/*.proto",
+        "{projectRoot}/buf.yaml",
+        "{projectRoot}/buf.gen.yaml"
+      ]
+    },
+    "lint-proto": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/libs/proto",
+        "command": "buf lint"
+      },
+      "cache": true,
+      "inputs": ["{projectRoot}/src/proto/**/*.proto", "{projectRoot}/buf.yaml"]
+    },
+    "breaking": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "packages/libs/proto",
+        "command": "buf breaking --against \".git#branch=main,subdir=packages/libs/proto\""
+      }
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "packages/libs/proto/dist",
+        "main": "packages/libs/proto/src/index.ts",
+        "tsConfig": "packages/libs/proto/tsconfig.lib.json",
+        "assets": [
+          {
+            "input": "packages/libs/proto/src/proto",
+            "glob": "**/*.proto",
+            "output": "proto"
+          }
+        ]
+      },
+      "dependsOn": ["generate"]
+    }
+  }
+}

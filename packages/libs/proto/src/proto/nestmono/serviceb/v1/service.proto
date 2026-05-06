@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package nestmono.serviceb.v1;
+
+service ServiceBService {
+  rpc Echo(EchoRequest) returns (EchoResponse);
+}
+
+message EchoRequest {
+  string payload = 1;
+}
+
+message EchoResponse {
+  string payload = 1;
+  int64 timestamp = 2;
+}

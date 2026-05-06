@@ -1,18 +1,45 @@
 {
-  "name": "@org/source",
+  "name": "@nest-mono/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "postinstall": "nx run @nest-mono/proto:generate"
+  },
   "private": true,
-  "dependencies": {},
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=10"
+  },
+  "packageManager": "pnpm@10.23.0",
   "devDependencies": {
+    "@bufbuild/buf": "^1.69.0",
+    "@nx/eslint": "22.7.0",
+    "@nx/eslint-plugin": "22.7.0",
+    "@nx/jest": "22.7.0",
     "@nx/js": "22.7.0",
+    "@nx/nest": "22.7.0",
+    "@nx/node": "22.7.0",
+    "@nx/workspace": "22.7.0",
     "@swc-node/register": "1.11.1",
     "@swc/core": "1.15.8",
     "@swc/helpers": "0.5.18",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^24.0.0",
+    "eslint": "^9.0.0",
+    "jest": "^29.7.0",
+    "jsonc-eslint-parser": "^2.4.2",
     "nx": "22.7.0",
     "prettier": "^3.8.1",
+    "ts-proto": "^2.11.7",
     "tslib": "^2.3.0",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.59.1"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.12.0",
+    "@grpc/grpc-js": "^1.14.3",
+    "@nestjs/common": "^11.1.19",
+    "@nestjs/microservices": "^11.1.19",
+    "rxjs": "^7.8.2"
   }
 }
