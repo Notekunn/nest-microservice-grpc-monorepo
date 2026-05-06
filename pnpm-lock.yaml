@@ -265,6 +265,12 @@ importers:
 
   packages/apps/service-b-e2e: {}
 
+  packages/apps/services-grpc-e2e:
+    devDependencies:
+      '@nest-mono/proto':
+        specifier: workspace:*
+        version: link:../../libs/proto
+
   packages/libs/nest-core:
     dependencies:
       '@fastify/static':

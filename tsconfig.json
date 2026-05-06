@@ -20,6 +20,9 @@
     },
     {
       "path": "./packages/apps/service-b"
+    },
+    {
+      "path": "./packages/apps/services-grpc-e2e"
     }
   ]
 }
