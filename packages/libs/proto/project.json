@@ -8,9 +8,18 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "packages/libs/proto",
-        "command": "buf generate"
+        "commands": [
+          "buf generate",
+          "buf build --path src/proto/service-a.proto -o src/proto/service-a.binpb",
+          "buf build --path src/proto/service-b.proto -o src/proto/service-b.binpb"
+        ],
+        "parallel": false
       },
-      "outputs": ["{projectRoot}/src/generated"],
+      "outputs": [
+        "{projectRoot}/src/generated",
+        "{projectRoot}/src/proto/service-a.binpb",
+        "{projectRoot}/src/proto/service-b.binpb"
+      ],
       "cache": true,
       "inputs": [
         "{projectRoot}/src/proto/**/*.proto",

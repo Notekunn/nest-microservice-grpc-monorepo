@@ -22,7 +22,7 @@ module.exports = {
         './src/assets',
         {
           input: '../../libs/proto/src/proto',
-          glob: '**/*.proto',
+          glob: '**/*.{proto,binpb}',
           output: 'proto',
         },
       ],

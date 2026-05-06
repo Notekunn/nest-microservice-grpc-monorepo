@@ -26,3 +26,8 @@ function resolveProtoDir(): string {
 export const PROTO_DIR = resolveProtoDir();
 export const SERVICE_A_PROTO = join(PROTO_DIR, 'service-a.proto');
 export const SERVICE_B_PROTO = join(PROTO_DIR, 'service-b.proto');
+
+// Per-service FileDescriptorSet binaries used by gRPC server reflection.
+// Generated via `buf build --path <proto> -o <name>.binpb`.
+export const SERVICE_A_DESCRIPTOR = join(PROTO_DIR, 'service-a.binpb');
+export const SERVICE_B_DESCRIPTOR = join(PROTO_DIR, 'service-b.binpb');
