@@ -2,8 +2,6 @@ import { z } from 'zod';
 
 export const baseEnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'staging', 'production', 'test']).default('development'),
-  PORT: z.coerce.number().default(3000),
-  GRPC_URL: z.string().default('0.0.0.0:50051'),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
 });
 
