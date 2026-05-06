@@ -9,6 +9,13 @@ export default [
         'error',
         {
           ignoredFiles: ['{projectRoot}/eslint.config.{js,cjs,mjs,ts,cts,mts}'],
+          ignoredDependencies: [
+            '@nestjs/common',
+            '@nestjs/microservices',
+            '@bufbuild/protobuf',
+            '@grpc/grpc-js',
+            'rxjs',
+          ],
         },
       ],
     },
