@@ -1,6 +1,6 @@
 {
   "name": "@nest-mono/service-b",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "private": true,
   "nx": {
     "targets": {

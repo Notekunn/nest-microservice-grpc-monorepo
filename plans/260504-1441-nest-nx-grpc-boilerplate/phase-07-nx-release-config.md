@@ -34,8 +34,14 @@
 - `proto` + `nest-core` libs stay private too unless cross-repo consumers exist.
 
 ## Tag → Docker tag mapping
-CI reads tags created by `nx release` → derives Docker tag `service-a:1.2.0-rc.1`.
-Helper script `scripts/extract-release-tags.sh` (bash) reads `git tag --points-at HEAD` → emits `SERVICE=service-a TAG=1.2.0-rc.1` lines.
+CI parses tags inline (no helper script). In `.gitlab-ci.yml`:
+```yaml
+git tag --points-at HEAD | grep -E '^(service-a|service-b)@' | while IFS='@' read -r svc ver; do
+  docker build --build-arg SERVICE=$svc -t $HARBOR/$svc:$ver .
+  docker push $HARBOR/$svc:$ver
+done
+```
+Lib tags (`proto@…`, `nest-core@…`) ignored — no Docker artifact.
 
 ## Validation
 - Local dry-run: `pnpm nx release --dry-run --specifier=prerelease --preid=rc`

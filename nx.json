@@ -55,7 +55,33 @@
       }
     }
   ],
-  "release": {},
+  "release": {
+    "projects": [
+      "packages/apps/*",
+      "packages/libs/*",
+      "!packages/apps/*-e2e",
+      "!packages/apps/services-grpc-e2e"
+    ],
+    "projectsRelationship": "independent",
+    "releaseTagPattern": "{projectName}@{version}",
+    "version": {
+      "conventionalCommits": true,
+      "generatorOptions": {
+        "currentVersionResolver": "git-tag",
+        "fallbackCurrentVersionResolver": "disk",
+        "updateDependents": "auto"
+      }
+    },
+    "changelog": {
+      "projectChangelogs": { "renderOptions": { "authors": false } },
+      "workspaceChangelog": false
+    },
+    "git": {
+      "commit": true,
+      "tag": true,
+      "commitMessage": "chore(release): publish {version}"
+    }
+  },
   "analytics": false,
   "targetDefaults": {
     "test": {
