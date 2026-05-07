@@ -2,39 +2,157 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main, staging]
   pull_request:
 
 permissions:
   actions: read
   contents: read
 
+env:
+  HARBOR_REGISTRY: harbor.example.com
+  HARBOR_PROJECT: my-org
+
 jobs:
-  main:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          filter: tree:0
           fetch-depth: 0
-
-      # This enables task distribution via Nx Cloud
-      # Run this command as early as possible, before dependencies are installed
-      # Learn more at https://nx.dev/ci/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      - run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e-ci"
-
-      # Cache node_modules
+          filter: tree:0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.23.0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm nx run @nest-mono/proto:generate
+      - uses: actions/upload-artifact@v4
+        with:
+          name: proto-generated
+          path: packages/libs/proto/src/generated
+          retention-days: 1
 
-      - run: npm ci
+  verify:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [lint, typecheck, test]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: tree:0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.23.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: nrwl/nx-set-shas@v4
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: proto-generated
+          path: packages/libs/proto/src/generated
+      - run: pnpm nx affected -t ${{ matrix.target }} --parallel=2
 
-      # Prepend any command with "nx record --" to record its logs to Nx Cloud
-      - run: npx nx record -- npx nx format:check  --base="remotes/origin/main"
-      - run: npx nx run-many -t lint test build typecheck e2e-ci
-      # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/ci/features/self-healing-ci
-      - run: npx nx fix-ci
-        if: always()
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: tree:0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.23.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: nrwl/nx-set-shas@v4
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: proto-generated
+          path: packages/libs/proto/src/generated
+      - run: pnpm nx affected -t build --parallel=2
+
+  release:
+    needs: [verify, build]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      matrix: ${{ steps.tags.outputs.matrix }}
+      has_releases: ${{ steps.tags.outputs.has_releases }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.23.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Configure git
+        run: |
+          git config user.email "ci@example.com"
+          git config user.name "ci"
+      - name: nx release
+        run: |
+          if [ "$GITHUB_REF" = "refs/heads/staging" ]; then
+            pnpm nx release --specifier=prerelease --preid=rc --yes
+          else
+            pnpm nx release --yes
+          fi
+      - name: Extract released service tags
+        id: tags
+        run: |
+          MATRIX=$(git tag --points-at HEAD \
+            | grep -E '^@nest-mono/(service-a|service-b)@' \
+            | sed -E 's|^@nest-mono/([^@]+)@(.+)$|{"service":"\1","tag":"\2"}|' \
+            | jq -sc '{include: .}')
+          if [ -z "$MATRIX" ] || [ "$MATRIX" = '{"include":[]}' ]; then
+            echo "has_releases=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_releases=true" >> "$GITHUB_OUTPUT"
+            echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+          fi
+
+  docker:
+    needs: release
+    if: needs.release.outputs.has_releases == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.release.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.HARBOR_REGISTRY }}
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          build-args: SERVICE=${{ matrix.service }}
+          tags: ${{ env.HARBOR_REGISTRY }}/${{ env.HARBOR_PROJECT }}/${{ matrix.service }}:${{ matrix.tag }}
+          cache-from: type=registry,ref=${{ env.HARBOR_REGISTRY }}/${{ env.HARBOR_PROJECT }}/${{ matrix.service }}:buildcache
+          cache-to: type=registry,ref=${{ env.HARBOR_REGISTRY }}/${{ env.HARBOR_PROJECT }}/${{ matrix.service }}:buildcache,mode=max
